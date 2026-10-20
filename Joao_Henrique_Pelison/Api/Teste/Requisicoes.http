@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:5286
+### Raiz do Projeto
+GET {{baseUrl}}
+
+### -- Cadastrar
+POST {{baseUrl}}/api/folha/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "joao",
+    "cpf": 12345678900,
+    "mes": 10,
+    "ano": 2020,
+    "horasTrabalhadada": 160,
+    "valorHora": 10
+}
+
+### -- listar
+GET {{baseUrl}}/api/folha/listar
+
+### -- CPF / MES / ANO
+GET {{baseUrl}}/api/folha/buscar/12345678900/10/2020
+
+### -- Excluir Personagem 
+DELETE {{baseUrl}}/api/folha/remover/12345678900/10/2020
