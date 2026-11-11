@@ -18,9 +18,16 @@ app.MapPost("/api/folha/cadastrar", (
     [FromBody] Funcionarios funcionario,
     [FromServices] AppDbContext ctx) =>
 {
-    var existe = ctx.TabelaFuncionario.Any(c => c.cpf == funcionario.cpf);
+    
+    funcionario.cpf = funcionario.cpf.Replace(".", "").Replace("-", "");
+
+    var existe = ctx.TabelaFuncionario.Any(c =>
+        c.cpf == funcionario.cpf &&
+        c.mes == funcionario.mes &&
+        c.ano == funcionario.ano);
+
     if (existe){
-        return Results.BadRequest("Cpf ja cadastrado");
+        return Results.BadRequest("Já existe uma folha cadastrada para este CPF, mês e ano.");
     }
     if (funcionario.mes < 1 || funcionario.mes > 12){
         return Results.BadRequest("O mês deve estar entre 1 e 12");
@@ -28,6 +35,8 @@ app.MapPost("/api/folha/cadastrar", (
     if (funcionario.ano < 2000){
         return Results.BadRequest("O ano deve ser maior ou igual a 2000.");
     }
+
+    funcionario.CalcularValores();
     ctx.TabelaFuncionario.Add(funcionario);
     ctx.SaveChanges();
     return Results.Ok("Folha Cadastrada com sucesso.");
@@ -46,50 +55,60 @@ app.MapGet("/api/folha/listar", (
 
 // -- Funcionalidade 3
 app.MapGet("/api/folha/buscar/{cpf}/{mes}/{ano}", (
-    double cpf,
+    string cpf,
     int mes,
     int ano,
-    [FromBody] Funcionarios funcionario,
     [FromServices] AppDbContext ctx) =>
 {
-    var existe = ctx.TabelaFuncionario.Find(funcionario.cpf);
-    if (existe != null){
-        var existe1 = ctx.TabelaFuncionario.Find(funcionario.mes);
-        if (existe1 != null){
-            var existe2 = ctx.TabelaFuncionario.Find(funcionario.ano);
-            if(existe2 != null)
-            {
-                return Results.Ok(funcionario);
-            }    
-        }
-        return Results.NotFound("Esse Mes não existe");
+    cpf = cpf.Replace(".", "").Replace("-", "");
+
+    var existe = ctx.TabelaFuncionario.FirstOrDefault(c =>
+        c.cpf == cpf &&
+        c.mes == mes &&
+        c.ano == ano);
+
+    if (existe == null){
+        return Results.NotFound("Folha de pagamento não encontrada para este CPF, mês e ano.");
     }
-    return Results.NotFound("Esse Cpf nao Existe");
+        return Results.Ok(existe);
 });
 
 // -- Funcionalidade 3
 app.MapDelete("/api/folha/remover/{cpf}/{mes}/{ano}", (
-    double cpf,
+    string cpf,
     int mes,
     int ano,
-    [FromBody] Funcionarios funcionario,
     [FromServices] AppDbContext ctx) =>
 {
-    var existe = ctx.TabelaFuncionario.Find(funcionario.cpf);
-    if (existe != null){
-        var existe1 = ctx.TabelaFuncionario.Find(funcionario.mes);
-        if (existe1 != null){
-            var existe2 = ctx.TabelaFuncionario.Find(funcionario.ano);
-            if(existe2 != null)
-            {
-                ctx.TabelaFuncionario.Remove(funcionario);
-                ctx.SaveChanges();
-                return Results.Ok("Funcionario Excluido");
-            }    
-        }
-        return Results.NotFound("Esse Mes não existe");
+    cpf = cpf.Replace(".", "").Replace("-", "");
+    var existe = ctx.TabelaFuncionario.FirstOrDefault(c =>
+        c.cpf == cpf &&
+        c.mes == mes &&
+        c.ano == ano);
+
+    if (existe == null){
+        return Results.NotFound("Folha de pagamento não encontrada para este CPF, mês e ano.");
     }
-    return Results.NotFound("Esse Cpf nao Existe");
+        ctx.TabelaFuncionario.Remove(existe);
+        ctx.SaveChanges();
+        return Results.Ok("Folha removida com sucesso!");
+});
+
+// -- Funcionalidade 4
+app.MapGet("/api/folha/total-liquido", (
+    [FromServices] AppDbContext ctx) =>
+{
+    if (ctx.TabelaFuncionario.Count() == 0)
+    {
+        return Results.NotFound("Não existe nenhum funcionario com folhas de pagamentos");
+    }
+
+    var total = ctx.TabelaFuncionario.Sum(c => c.SalarioLiquido);
+
+    return Results.Ok(new
+    {
+        totalLiquido = MathF.Round(total, 2).ToString("C2")
+    });
 });
 
 app.Run();

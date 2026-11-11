@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261020000226_IntParaBolean")]
-    partial class IntParaBolean
+    [Migration("20261111140507_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,19 +44,20 @@ namespace Api.Migrations
                     b.Property<float>("SalarioLiquido")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("ValorHora")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ano")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("cpf")
-                        .HasColumnType("REAL");
+                    b.Property<string>("cpf")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("horasTrabalhadadas")
+                    b.Property<int>("horasTrabalhadas")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("mes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("valorHora")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");

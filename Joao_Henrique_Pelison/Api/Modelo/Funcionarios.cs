@@ -4,45 +4,73 @@ public class Funcionarios
 {
     public int Id {get; set;}
     public string Nome {get; set;} = string.Empty;
-    public double cpf {get; set;}
+    public string cpf {get; set;} = string.Empty;
     public int mes {get; set;}
     public int ano {get; set;}
-    public int horasTrabalhadadas {get; set;}
-    public int ValorHora {get; set;}
+    public int horasTrabalhadas {get; set;}
+    public int valorHora {get; set;}
 
-    public float SalarioBruto {get; set;} = horasTrabalhadadas * ValorHora
-
-    public float ImpostoRenda {get; set;} = {
-        if (SalarioBruto <= 1903.98){
-            ImpostoRenda = 0;
-        } 
-        if (SalarioBruto >= 1903.99 && SalarioBruto <= 2826.65){
-            ImpostoRenda = (SalarioBruto * 0.075) - 142.80;
-
-        }if (SalarioBruto >= 2826.66 && SalarioBruto <= 3751,05){
-            ImpostoRenda = (SalarioBruto * 0.15) - 354.80;
-        }
-        if (SalarioBruto >= 3751,06 && SalarioBruto <= 4664,68){
-            ImpostoRenda = (SalarioBruto * 0.225) - 636.13
-        }
-        if (SalarioBruto > 4664.68){
-            ImpostoRenda = (SalarioBruto * 0.275) - 869.36
-        }
-    }
-    public float Inss {get; set;} = {
-        if (SalarioBruto <= 1693,72){
-            Inss = SalarioBruto * 0.8;
-        }
-        if (SalarioBruto >= 1693,73 && SalarioBruto <= 2822.90){
-            Inss = SalarioBruto * 0.9;
-        }
-        if (SalarioBruto >= 2822.91 && SalarioBruto <= 5645.80){
-            Inss = SalarioBruto * 0.11;
-        }
-        if (SalarioBruto > 5645.81){
-            Inss = SalarioBruto + 621.03
-        }
-    }
+    public float SalarioBruto {get; set;}
+    public float ImpostoRenda {get; set;}
+    public float Inss {get; set;}
     public float Fgts {get; set;}
     public float SalarioLiquido {get; set;}
+
+    public void CalcularValores()
+    {
+        SalarioBruto = horasTrabalhadas * valorHora;
+
+        if (SalarioBruto <= 1903.98f)
+        {
+            ImpostoRenda = (SalarioBruto * 0f) - 0f;
+        }
+        else if (SalarioBruto <= 2826.65f)
+        {
+            ImpostoRenda = (SalarioBruto * 0.075f) - 142.80f;
+        }
+        else if (SalarioBruto <= 3751.05f)
+        {
+            ImpostoRenda = (SalarioBruto * 0.15f) - 354.80f;
+        }
+        else if (SalarioBruto <= 4664.68f)
+        {
+            ImpostoRenda = (SalarioBruto * 0.225f) - 636.13f; 
+        }
+        else
+        {
+            ImpostoRenda = (SalarioBruto * 0.275f) - 869.36f;
+        }
+
+        // - Inss
+        if (SalarioBruto <= 1693.72f)
+        {
+            Inss = SalarioBruto * 0.08f;
+        }
+        else if (SalarioBruto <= 2822.90f)
+        {
+            Inss = SalarioBruto * 0.09f;
+        }
+        else if (SalarioBruto <= 5645.80f)
+        {
+            Inss = SalarioBruto * 0.11f;
+        }
+        else
+        {
+            Inss = 621.03f;
+        }
+
+        // -- FGTS
+        Fgts = SalarioBruto * 0.08f;
+
+        // -- Salário Líquido
+        SalarioLiquido = SalarioBruto - ImpostoRenda - Inss;
+
+        //-- arredondamento
+        SalarioBruto = MathF.Round(SalarioBruto, 2);
+        ImpostoRenda = MathF.Round(ImpostoRenda, 2);
+        Inss = MathF.Round(Inss, 2);
+        Fgts = MathF.Round(Fgts, 2);
+        SalarioLiquido = MathF.Round(SalarioLiquido, 2);
+    }
 }
+

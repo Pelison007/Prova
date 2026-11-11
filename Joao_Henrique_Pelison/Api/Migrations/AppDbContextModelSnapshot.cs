@@ -41,19 +41,20 @@ namespace Api.Migrations
                     b.Property<float>("SalarioLiquido")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("ValorHora")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ano")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("cpf")
-                        .HasColumnType("REAL");
+                    b.Property<string>("cpf")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("horasTrabalhadadas")
+                    b.Property<int>("horasTrabalhadas")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("mes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("valorHora")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
